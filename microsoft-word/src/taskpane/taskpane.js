@@ -1,6 +1,6 @@
 import { languages } from "./const";
 
-var sourceLang, targetLang;
+var sourceLang, targetLang, text;
 
 Office.onReady((info) => {
   if (info.host === Office.HostType.Word) {
@@ -18,34 +18,52 @@ Office.onReady((info) => {
     selectLang();
 
     // Events register
-    document.getElementById("source-lang").addEventListener("change", selectLang);
-    document.getElementById("target-lang").addEventListener("change", selectLang);
-    document.getElementById("swap-btn").addEventListener("click", swapLang);
-    Office.context.document.addHandlerAsync(Office.EventType.DocumentSelectionChanged, selectText);
+    document.getElementById("source-lang").addEventListener("change", onSelectLang);
+    document.getElementById("target-lang").addEventListener("change", onSelectLang);
+    document.getElementById("swap-btn").addEventListener("click", onSwapLang);
+    document.getElementById("source").addEventListener("input", onTyping);
+    Office.context.document.addHandlerAsync(
+      Office.EventType.DocumentSelectionChanged,
+      onSelectText
+    );
   }
 });
 
 // Event functions
-async function selectLang() {
-  sourceLang = document.getElementById("source-lang").value;
-  targetLang = document.getElementById("target-lang").value;
+async function onSelectLang() {
+  selectLang();
   await translate();
 }
-async function swapLang() {
+async function onSwapLang() {
   document.getElementById("source-lang").value = targetLang;
   document.getElementById("target-lang").value =
     sourceLang === "Auto detect" ? languages[0] : sourceLang;
   selectLang();
   await translate();
 }
-async function selectText() {
+async function onSelectText() {
+  await Word.run(async (context) => {
+    var range = context.document.getSelection();
+    range.load("text");
+    await context.sync();
+    if (range.text?.trim()) text = range.text;
+  });
+  await translate();
+}
+async function onTyping(event) {
+  text = event.target.value;
   await translate();
 }
 
 // Util functions
 async function translate() {
-  document.getElementById("source").value = `${sourceLang}: Lmao`;
-  document.getElementById("target").innerText = `${targetLang}: Lmao`;
+  const translation = text && `[${sourceLang} > ${targetLang}]: ${text}`;
+  document.getElementById("source").value = text;
+  document.getElementById("target").innerText = translation;
+}
+function selectLang() {
+  sourceLang = document.getElementById("source-lang").value;
+  targetLang = document.getElementById("target-lang").value;
 }
 function createOptionElm(value, selected = false) {
   const option = document.createElement("option");

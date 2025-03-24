@@ -67,18 +67,17 @@ body {
       padding: 1rem 0;
     }
 
-    .source {
+    textarea {
       border: none;
       outline: none;
       resize: none;
       width: 100%;
       font-size: 1.25rem;
       font-family: inherit;
-      box-shadow: 0 0 1px lightgray;
-    }
 
-    .target {
-      font-size: 1.25rem;
+      &#source {
+        box-shadow: 0 0 1px lightgray;
+      }
     }
   }
 }
