@@ -4,10 +4,12 @@ import { API_KEY } from "../config/config";
 
 // Model
 const genAI = new GoogleGenerativeAI(API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
 // States
-var sourceLang, targetLang, text;
+let sourceLang, targetLang, text;
+let modelName = "gemini-2.0-flash";
+let temperature = 0.7;
+let docType = "general";
 
 // Elements
 const appLoadElm = document.getElementById("app-load");
@@ -22,7 +24,7 @@ const targetElm = document.getElementById("target");
 Office.onReady((info) => {
   if (info.host === Office.HostType.Word) {
     appLoadElm.style.display = "none";
-    appBodyElm.style.display = "block";
+    appBodyElm.style.display = "flex";
 
     // Append language options
     sourceLangElm.appendChild(createOptionElm("Auto detect", true));
@@ -85,7 +87,8 @@ async function translate() {
 async function promptModel(prompt) {
   return new Promise((resolve) => {
     debounceTimer = setTimeout(async () => {
-      const result = await model.generateContent(prompt);
+      const model = genAI.getGenerativeModel({ model: modelName });
+      const result = await model.generateContent(prompt, { temperature });
       resolve(result.response.text());
     }, 500);
   });

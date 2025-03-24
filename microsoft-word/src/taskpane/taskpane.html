@@ -5,8 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Gemini Translator</title>
-    <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat" rel="stylesheet">
+    <script
+      type="text/javascript"
+      src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"
+    ></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat" rel="stylesheet" />
     <link href="taskpane.css" rel="stylesheet" type="text/css" />
   </head>
 
@@ -15,24 +18,35 @@
       <div>Loading</div>
     </section>
     <main id="app-body">
-      <section class="header">
-        <div>
-          <img src="/assets/logo-filled.png" alt="logo" />
-        </div>
-        <div>Setting</div>
-      </section>
       <section class="translator">
         <div class="languages">
           <select title="Source language" id="source-lang"></select>
           <button type="button" id="swap-btn">
-            <img src="/assets/switch-icon.svg" alt="Swap"/>
+            <img src="/assets/switch-icon.svg" alt="Swap" />
           </button>
           <select title="Target language" id="target-lang"></select>
         </div>
         <div class="translation">
           <textarea id="source" placeholder="Select text from document to translate"></textarea>
-          <textarea id="target" placeholder="Translation"></textarea>
+          <textarea id="target" placeholder="Translation" readonly></textarea>
         </div>
+      </section>
+      <section class="settings">
+        <select title="Model" id="model">
+          <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+          <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash Experimental</option>
+          <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash-Lite</option>
+          <option value="gemini-2.0-flash-thinking-exp-01-21">
+            Gemini 2.0 Flash Thinking Experimental 01-21
+          </option>
+          <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+          <option value="gemini-1.5-flash-8b">Gemini 1.5 Flash-8B</option>
+        </select>
+        <input title="Temperature" id="temperature" placeholder="Temperature" />
+        <select title="Writing style" id="writing-style">
+          <option>General</option>
+          <option>Academic</option>
+        </select>
       </section>
     </main>
   </body>

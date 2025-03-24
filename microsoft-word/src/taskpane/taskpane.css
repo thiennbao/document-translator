@@ -7,27 +7,20 @@ body {
 
 #app-body {
   display: none; /* Hide while loading */
-  padding: 1rem;
-  background-color: #1f1f1f;
-  border-radius: 0 0 1rem 1rem;
-
+  height: 100vh;
+  flex-direction: column;
+  justify-content: space-between;
   * {
     background-color: transparent;
     color: lightgray;
   }
 }
 
-.header {
-  display: none;
-  justify-content: space-between;
-  align-items: center;
-
-  img {
-    height: 2rem;
-  }
-}
-
 .translator {
+  background-color: #1f1f1f !important;
+  border-radius: 0 0 1rem 1rem;
+  padding: 1rem;
+
   .languages {
     height: 2.5rem;
     display: flex;
@@ -72,13 +65,38 @@ body {
       outline: none;
       resize: none;
       width: 100%;
-      height: 10rem;
-      font-size: 1.25rem;
+      height: 8rem;
+      font-size: 1rem;
       font-family: inherit;
 
       &#source {
         box-shadow: 0 0 1px lightgray;
       }
+    }
+  }
+}
+
+.settings {
+  padding: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+
+  select:first-child {
+    width: 100%;
+  }
+
+  > * {
+    flex-grow: 1;
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+    border: gray solid 1px;
+    outline: none;
+    border-radius: 0.25rem;
+
+    option {
+      box-shadow: none;
+      background-color: #1f1f1f !important;
     }
   }
 }
