@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>OpenAI Translator</title>
     <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat" rel="stylesheet">
     <link href="taskpane.css" rel="stylesheet" type="text/css" />
   </head>
 
@@ -14,9 +15,31 @@
       <div>Loading</div>
     </section>
     <main id="app-body">
-      <div role="button" id="run">
-        <span>Runnn</span>
-      </div>
+      <section class="header">
+        <div>
+          <img src="/assets/logo-filled.png" alt="logo" />
+        </div>
+        <div>Setting</div>
+      </section>
+      <section class="translator">
+        <div class="languages">
+          <select title="Source language" id="source-lang">
+            <option>a</option>
+            <option>b</option>
+          </select>
+          <button type="button" id="switch-btn">
+            <img src="/assets/switch-icon.svg" alt="Switch"/>
+          </button>
+          <select title="Target language" id="target-lang">
+            <option>a</option>
+            <option>b</option>
+          </select>
+        </div>
+        <div class="translation">
+          <textarea class="source" name="text" placeholder="Select text from document to translate"></textarea>
+          <div class="target">Translation</div>
+        </div>
+      </section>
     </main>
   </body>
 </html>

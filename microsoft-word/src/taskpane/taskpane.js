@@ -1,7 +1,7 @@
 Office.onReady((info) => {
   if (info.host === Office.HostType.Word) {
     document.getElementById("app-load").style.display = "none";
-    document.getElementById("app-body").style.display = "flex";
+    document.getElementById("app-body").style.display = "block";
 
     // Events register
     Office.context.document.addHandlerAsync(Office.EventType.DocumentSelectionChanged, onSelect);
