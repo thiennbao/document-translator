@@ -72,28 +72,31 @@ async function onTyping(event) {
 }
 
 // Util functions
-let debounceTimer;
-async function promptModel(prompt) {
-  clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(async () => {
-    const result = await model.generateContent(prompt);
-    return result.response.text();
-  }, 5);
-}
 
 async function translate() {
   if (!text) return;
   const prompt = `Translate "${text}" from ${sourceLang} to ${targetLang}, response only the translation.`;
-  console.log(await promptModel(prompt));
-  const translation = prompt;
+  const translation = await promptModel(prompt);
   sourceElm.value = text ?? "";
   targetElm.innerText = translation ?? "";
+}
+
+let debounceTimer;
+async function promptModel(prompt) {
+  if (debounceTimer) clearTimeout(debounceTimer);
+  return new Promise((resolve) => {
+    debounceTimer = setTimeout(async () => {
+      const result = await model.generateContent(prompt);
+      resolve(result.response.text());
+    }, 500);
+  });
 }
 
 function selectLang() {
   sourceLang = sourceLangElm.value;
   targetLang = targetLangElm.value;
 }
+
 function createOptionElm(value, selected = false) {
   const option = document.createElement("option");
   option.value = value;
