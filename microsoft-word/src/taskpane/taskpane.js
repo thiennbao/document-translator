@@ -62,7 +62,7 @@ async function onSelectText() {
     var range = context.document.getSelection();
     range.load("text");
     await context.sync();
-    text = range.text.trim();
+    text = range.text.trim() || undefined;
   });
   await translate();
 }
@@ -73,17 +73,16 @@ async function onTyping(event) {
 
 // Util functions
 
-async function translate() {
-  if (!text) return;
-  const prompt = `Translate "${text}" from ${sourceLang} to ${targetLang}, response only the translation.`;
-  const translation = await promptModel(prompt);
-  sourceElm.value = text ?? "";
-  targetElm.innerText = translation ?? "";
-}
-
 let debounceTimer;
-async function promptModel(prompt) {
+async function translate() {
   if (debounceTimer) clearTimeout(debounceTimer);
+  if (text === undefined) return;
+  const prompt = `Translate "${text}" from ${sourceLang} to ${targetLang}, response only the translation.`;
+  const translation = text && (await promptModel(prompt));
+  sourceElm.value = text;
+  targetElm.innerText = translation;
+}
+async function promptModel(prompt) {
   return new Promise((resolve) => {
     debounceTimer = setTimeout(async () => {
       const result = await model.generateContent(prompt);
