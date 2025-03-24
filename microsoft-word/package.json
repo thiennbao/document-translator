@@ -1,5 +1,5 @@
 {
-  "name": "openai-translator-addin",
+  "name": "gemini-translator-addin",
   "version": "0.0.1",
   "config": {
     "app_to_debug": "word",
@@ -21,6 +21,7 @@
     "watch": "webpack --mode development --watch"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.0",
     "core-js": "^3.36.0",
     "regenerator-runtime": "^0.14.1"
   },

@@ -1,15 +1,32 @@
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { languages } from "./const";
+import { API_KEY } from "./config";
 
+// Model
+const genAI = new GoogleGenerativeAI(API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+// States
 var sourceLang, targetLang, text;
 
+// Elements
+const appLoadElm = document.getElementById("app-load");
+const appBodyElm = document.getElementById("app-body");
+const sourceLangElm = document.getElementById("source-lang");
+const targetLangElm = document.getElementById("target-lang");
+const swapBtnElm = document.getElementById("swap-btn");
+const sourceElm = document.getElementById("source");
+const targetElm = document.getElementById("target");
+
+// App entry
 Office.onReady((info) => {
   if (info.host === Office.HostType.Word) {
-    document.getElementById("app-load").style.display = "none";
-    document.getElementById("app-body").style.display = "block";
+    appLoadElm.style.display = "none";
+    appBodyElm.style.display = "block";
 
     // Append language options
-    document.getElementById("source-lang").appendChild(createOptionElm("Auto detect", true));
-    document.querySelectorAll("select[id$=lang]").forEach((select) => {
+    sourceLangElm.appendChild(createOptionElm("Auto detect", true));
+    [sourceLangElm, targetLangElm].forEach((select) => {
       languages.forEach((lang) => {
         select.appendChild(createOptionElm(lang));
       });
@@ -18,10 +35,10 @@ Office.onReady((info) => {
     selectLang();
 
     // Events register
-    document.getElementById("source-lang").addEventListener("change", onSelectLang);
-    document.getElementById("target-lang").addEventListener("change", onSelectLang);
-    document.getElementById("swap-btn").addEventListener("click", onSwapLang);
-    document.getElementById("source").addEventListener("input", onTyping);
+    sourceLangElm.addEventListener("change", onSelectLang);
+    targetLangElm.addEventListener("change", onSelectLang);
+    swapBtnElm.addEventListener("click", onSwapLang);
+    sourceElm.addEventListener("input", onTyping);
     Office.context.document.addHandlerAsync(
       Office.EventType.DocumentSelectionChanged,
       onSelectText
@@ -35,9 +52,8 @@ async function onSelectLang() {
   await translate();
 }
 async function onSwapLang() {
-  document.getElementById("source-lang").value = targetLang;
-  document.getElementById("target-lang").value =
-    sourceLang === "Auto detect" ? languages[0] : sourceLang;
+  sourceLangElm.value = targetLang;
+  targetLangElm.value = sourceLang === "Auto detect" ? languages[0] : sourceLang;
   selectLang();
   await translate();
 }
@@ -46,7 +62,7 @@ async function onSelectText() {
     var range = context.document.getSelection();
     range.load("text");
     await context.sync();
-    if (range.text?.trim()) text = range.text;
+    text = range.text.trim();
   });
   await translate();
 }
@@ -57,13 +73,16 @@ async function onTyping(event) {
 
 // Util functions
 async function translate() {
-  const translation = text && `[${sourceLang} > ${targetLang}]: ${text}`;
-  document.getElementById("source").value = text;
-  document.getElementById("target").innerText = translation;
+  if (!text) return;
+  const prompt = `Translate "${text}" from ${sourceLang} to ${targetLang}, response only the translation.`;
+  const result = await model.generateContent(prompt);
+  const translation = result.response.text();
+  sourceElm.value = text ?? "";
+  targetElm.innerText = translation ?? "";
 }
 function selectLang() {
-  sourceLang = document.getElementById("source-lang").value;
-  targetLang = document.getElementById("target-lang").value;
+  sourceLang = sourceLangElm.value;
+  targetLang = targetLangElm.value;
 }
 function createOptionElm(value, selected = false) {
   const option = document.createElement("option");
