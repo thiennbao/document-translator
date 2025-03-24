@@ -1,4 +1,4 @@
-export const languages = [
+const languages = [
   "Abkhaz", "Acehnese", "Acholi", "Afar", "Afrikaans", "Albanian", "Amharic", "Arabic", "Armenian", "Azerbaijani",
   "Basque", "Belarusian", "Bengali", "Bhojpuri", "Bosnian", "Bulgarian", "Burmese", "Catalan", "Cebuano", "Chichewa",
   "Chinese (Simplified)", "Chinese (Traditional)", "Corsican", "Croatian", "Czech", "Danish", "Dutch", "Dzongkha",
@@ -13,3 +13,5 @@ export const languages = [
   "Tatar", "Telugu", "Thai", "Tigrinya", "Tongan", "Turkish", "Turkmen", "Ukrainian", "Urdu", "Uyghur",
   "Uzbek", "Vietnamese", "Welsh", "Xhosa", "Yiddish", "Yoruba", "Zulu",
 ];
+
+export default languages

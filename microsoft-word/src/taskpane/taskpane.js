@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { languages } from "./const";
-import { API_KEY } from "./config";
+import languages from "../constants/languages";
+import { API_KEY } from "../config/config";
 
 // Model
 const genAI = new GoogleGenerativeAI(API_KEY);
@@ -72,14 +72,24 @@ async function onTyping(event) {
 }
 
 // Util functions
+let debounceTimer;
+async function promptModel(prompt) {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(async () => {
+    const result = await model.generateContent(prompt);
+    return result.response.text();
+  }, 5);
+}
+
 async function translate() {
   if (!text) return;
   const prompt = `Translate "${text}" from ${sourceLang} to ${targetLang}, response only the translation.`;
-  const result = await model.generateContent(prompt);
-  const translation = result.response.text();
+  console.log(await promptModel(prompt));
+  const translation = prompt;
   sourceElm.value = text ?? "";
   targetElm.innerText = translation ?? "";
 }
+
 function selectLang() {
   sourceLang = sourceLangElm.value;
   targetLang = targetLangElm.value;
