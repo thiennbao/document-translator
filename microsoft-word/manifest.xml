@@ -4,8 +4,8 @@
   <Version>1.0.0.0</Version>
   <ProviderName>Ú</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
-  <DisplayName DefaultValue="Genimi Translator"/>
-  <Description DefaultValue="Translator add-in using Genimi"/>
+  <DisplayName DefaultValue="Document Translator"/>
+  <Description DefaultValue="Document Translator add-in based on Genimi"/>
   <IconUrl DefaultValue="https://localhost:3000/assets/icon-32.png"/>
   <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/icon-64.png"/>
   <SupportUrl DefaultValue="https://localhost:3000"/>
