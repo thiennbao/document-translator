@@ -32,7 +32,7 @@
         </div>
       </section>
       <section class="settings">
-        <select title="Model" id="model">
+        <select title="Model name" id="model-name">
           <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
           <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash Experimental</option>
           <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash-Lite</option>
@@ -42,7 +42,15 @@
           <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
           <option value="gemini-1.5-flash-8b">Gemini 1.5 Flash-8B</option>
         </select>
-        <input title="Temperature" id="temperature" placeholder="Temperature" />
+        <input
+          title="Temperature"
+          id="temperature"
+          placeholder="Temperature"
+          type="number"
+          min="0"
+          max="1"
+          step="0.1"
+        />
         <select title="Writing style" id="writing-style">
           <option>General</option>
           <option>Academic</option>

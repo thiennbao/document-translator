@@ -23,6 +23,7 @@
   "dependencies": {
     "@google/generative-ai": "^0.24.0",
     "core-js": "^3.36.0",
+    "jquery": "^3.7.1",
     "regenerator-runtime": "^0.14.1"
   },
   "devDependencies": {
