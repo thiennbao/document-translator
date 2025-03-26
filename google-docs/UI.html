@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Document Translator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <style>
       body {
         margin: 0;
@@ -135,7 +137,6 @@
         </div>
       </section>
       <section class="settings">
-        <div id="selectedText"></div>
         <select title="Model name" id="model-name">
           <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
           <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash Experimental</option>
@@ -151,5 +152,126 @@
         </select>
       </section>
     </main>
+
+    <script>
+      // Constants
+      const languages = ["Abkhaz", "Acehnese", "Acholi", "Afar", "Afrikaans", "Albanian", "Amharic", "Arabic", "Armenian", "Azerbaijani", "Basque", "Belarusian", "Bengali", "Bhojpuri", "Bosnian", "Bulgarian", "Burmese", "Catalan", "Cebuano", "Chichewa", "Chinese (Simplified)", "Chinese (Traditional)", "Corsican", "Croatian", "Czech", "Danish", "Dutch", "Dzongkha", "English", "Esperanto", "Estonian", "Ewe", "Fijian", "Finnish", "French", "Galician", "Georgian", "German", "Greek", "Guarani", "Gujarati", "Haitian Creole", "Hausa", "Hawaiian", "Hebrew", "Hmong", "Hungarian", "Icelandic", "Igbo", "Ilokano", "Indonesian", "Inuktitut", "Irish", "Italian", "Japanese", "Javanese", "Kannada", "Kazakh", "Khmer", "Kinyarwanda", "Klingon", "Korean", "Kurdish", "Kyrgyz", "Lao", "Latin", "Latvian", "Lingala", "Lithuanian", "Luxembourgish", "Macedonian", "Maori", "Marathi", "Mayan", "Mizo", "Mongolian", "Nepali", "Nigerian Pidgin", "Nko", "Norwegian", "Nyanja", "Odia", "Pashto", "Persian", "Polish", "Portuguese", "Punjabi", "Quechua", "Romanian", "Russian", "Samoan", "Scots Gaelic", "Serbian", "Sesotho", "Shona", "Sindhi", "Sinhala", "Slovak", "Slovenian", "Somali", "Southern Sotho", "Spanish", "Sundanese", "Swahili", "Swati", "Swedish", "Tajik", "Tamil", "Tatar", "Telugu", "Thai", "Tigrinya", "Tongan", "Turkish", "Turkmen", "Ukrainian", "Urdu", "Uyghur", "Uzbek", "Vietnamese", "Welsh", "Xhosa", "Yiddish", "Yoruba", "Zulu"];
+      const API_KEY = "";
+
+      // Select options
+      $("#source-lang").append(createOptionElm("Auto detect", true));
+      languages.forEach((lang) => {
+        $("#source-lang").append(createOptionElm(lang));
+        $("#target-lang").append(createOptionElm(lang));
+      });
+      $("#target-lang>option[value=Vietnamese]")[0].selected = true;
+      $("#temperature").val(0.8);
+
+      // States
+      class StateManager {
+        constructor(initialState, event) {
+          this.state = initialState;
+
+          this.setState = (newState) => {
+            if (newState.sourceLang == this.state.sourceLang && newState.targetLang == this.state.targetLang && newState.text == this.state.text && newState.modelName == this.state.modelName && newState.temperature == this.state.temperature && newState.wrttingStyle == this.state.wrttingStyle) return;
+            this.state = newState;
+            dispatchEvent(event);
+          };
+        }
+      }
+      let stateUpdated = new Event("stateUpdate");
+      const stateManager = new StateManager(
+        {
+          sourceLang: "Auto detect",
+          targetLang: "Vietnamese",
+          text: "",
+          modelName: "gemini-2.0-flash",
+          temperature: 0.8,
+          wrttingStyle: "general",
+        },
+        stateUpdated
+      );
+      let debounceTimer;
+
+      // Event handler
+      async function onStateUpdated() {
+        if (debounceTimer) clearTimeout(debounceTimer);
+        if (stateManager.state.text) {
+          // 2-ways binding
+          $("#source-lang").val(stateManager.state.sourceLang);
+          $("#target-lang").val(stateManager.state.targetLang);
+          $("#source").val(stateManager.state.text);
+          $("#model-name").val(stateManager.state.modelName);
+          $("#tempurature").val(stateManager.state.temperature);
+          $("#writting-style").val(stateManager.state.wrttingStyle);
+          // Insert translation
+          const translation = await translate(stateManager.state);
+          console.log(stateManager.state, translation);
+          $("#target").val(translation);
+        }
+      }
+      function onSourceLangChange(e) {
+        stateManager.setState({ ...stateManager.state, sourceLang: e.target.value });
+      }
+      function onTargetLangChange(e) {
+        stateManager.setState({ ...stateManager.state, targetLang: e.target.value });
+      }
+      function onSwapLang() {
+        const currentSource = stateManager.state.sourceLang;
+        const currentTarget = stateManager.state.targetLang;
+        stateManager.setState({
+          ...stateManager.state,
+          sourceLang: currentTarget,
+          targetLang: currentSource === "Auto detect" ? languages[0] : currentSource,
+        });
+      }
+      function onTyping(e) {
+        stateManager.setState({ ...stateManager.state, text: e.target.value });
+      }
+      function onModelChange(e) {
+        stateManager.setState({ ...stateManager.state, modelName: e.target.value });
+      }
+      function onTempChange(e) {
+        stateManager.setState({ ...stateManager.state, temperature: e.target.value });
+      }
+      function onStyleChange(e) {
+        stateManager.setState({ ...stateManager.state, wrttingStyle: e.target.value });
+      }
+
+      // Events register
+      window.addEventListener("stateUpdate", onStateUpdated);
+      $("#source-lang").on("change", onSourceLangChange);
+      $("#target-lang").on("change", onTargetLangChange);
+      $("#swap-btn").on("click", onSwapLang);
+      $("#source").on("input", onTyping);
+      $("#model-name").on("change", onModelChange);
+      $("#temperature").on("input", onTempChange);
+      $("#writting-style").on("change", onStyleChange);
+
+      // Util functions
+      async function translate(state) {
+        return new Promise((resolve) => {
+          debounceTimer = setTimeout(async () => {
+            const prompt = `Translate "${state.text}" from ${state.sourceLang} to ${state.targetLang} in ${state.wrttingStyle} wrtting style, response only the translation.`;
+            const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + API_KEY, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
+            });
+            const result = await res.json();
+            resolve(result.candidates[0].content.parts[0].text);
+          }, 500);
+        });
+      }
+      function createOptionElm(value, selected = false) {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = value;
+        option.selected = selected;
+        return option;
+      }
+    </script>
   </body>
 </html>
