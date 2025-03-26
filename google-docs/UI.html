@@ -4,8 +4,152 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Document Translator</title>
+    <style>
+      body {
+        margin: 0;
+        box-sizing: border-box;
+        background-color: #101010;
+        font-family: "Montserrat", sans-serif;
+      }
+
+      #app-body {
+        height: 100vh;
+        flex-direction: column;
+        justify-content: space-between;
+
+        * {
+          background-color: transparent;
+          color: lightgray;
+        }
+      }
+
+      .translator {
+        background-color: #1f1f1f !important;
+        border-radius: 0 0 1rem 1rem;
+        padding: 1rem;
+
+        .languages {
+          height: 2.5rem;
+          display: flex;
+          gap: 0.75rem;
+          margin-bottom: 0.5rem;
+
+          select {
+            width: 100%;
+            border-radius: 0.25rem;
+            padding: 0.5rem;
+            cursor: pointer;
+
+            option {
+              box-shadow: none;
+              background-color: #1f1f1f !important;
+            }
+          }
+
+          button {
+            aspect-ratio: 1 / 1;
+            border-radius: 100%;
+            border: none;
+            outline: none;
+            padding: 0.75rem;
+            background-color: #2b579a !important;
+            cursor: pointer;
+
+            &:hover {
+              background-color: #1b478a !important;
+            }
+          }
+        }
+
+        .translation {
+          overflow: hidden;
+
+          * {
+            padding: 1rem 0;
+          }
+
+          textarea {
+            border: none;
+            outline: none;
+            resize: none;
+            width: 100%;
+            height: 8rem;
+            font-size: 1rem;
+            font-family: inherit;
+
+            &::-webkit-scrollbar {
+              width: 0.25rem;
+            }
+            &::-webkit-scrollbar-thumb {
+              background-color: gray;
+            }
+
+            &#source {
+              box-shadow: 0 0px 1px lightgray;
+            }
+          }
+        }
+      }
+
+      .settings {
+        padding: 1rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+
+        select:first-child {
+          width: 100%;
+        }
+
+        > * {
+          flex-grow: 1;
+          border-radius: 0.25rem;
+          padding: 0.5rem;
+          border: gray solid 1px;
+          outline: none;
+          border-radius: 0.25rem;
+
+          option {
+            box-shadow: none;
+            background-color: #1f1f1f !important;
+          }
+        }
+      }
+    </style>
   </head>
   <body>
-    <div>Hello</div>
+    <main id="app-body">
+      <section class="translator">
+        <div class="languages">
+          <select title="Source language" id="source-lang"></select>
+          <button title="Swap" type="button" id="swap-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="lightgray">
+              <path d="M0 224c0 17.7 14.3 32 32 32s32-14.3 32-32c0-53 43-96 96-96l160 0 0 32c0 12.9 7.8 24.6 19.8 29.6s25.7 2.2 34.9-6.9l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-9.2-9.2-22.9-11.9-34.9-6.9S320 19.1 320 32l0 32L160 64C71.6 64 0 135.6 0 224zm512 64c0-17.7-14.3-32-32-32s-32 14.3-32 32c0 53-43 96-96 96l-160 0 0-32c0-12.9-7.8-24.6-19.8-29.6s-25.7-2.2-34.9 6.9l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c9.2 9.2 22.9 11.9 34.9 6.9s19.8-16.6 19.8-29.6l0-32 160 0c88.4 0 160-71.6 160-160z" />
+            </svg>
+          </button>
+          <select title="Target language" id="target-lang"></select>
+        </div>
+        <div class="translation">
+          <textarea id="source" placeholder="Select text from document to translate"></textarea>
+          <textarea id="target" placeholder="Translation" readonly></textarea>
+        </div>
+      </section>
+      <section class="settings">
+        <div id="selectedText"></div>
+        <select title="Model name" id="model-name">
+          <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+          <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash Experimental</option>
+          <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash-Lite</option>
+          <option value="gemini-2.0-flash-thinking-exp-01-21">Gemini 2.0 Flash Thinking Experimental 01-21</option>
+          <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+          <option value="gemini-1.5-flash-8b">Gemini 1.5 Flash-8B</option>
+        </select>
+        <input title="Temperature" id="temperature" placeholder="Temperature" type="number" min="0" max="1" step="0.1" />
+        <select title="Writting style" id="writting-style">
+          <option value="general">General</option>
+          <option value="academic">Academic</option>
+        </select>
+      </section>
+    </main>
   </body>
 </html>
