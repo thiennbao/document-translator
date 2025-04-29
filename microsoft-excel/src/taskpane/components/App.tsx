@@ -1,11 +1,12 @@
 import * as React from "react";
+import { handleSubmit } from "../utils";
 
 interface AppProps {
   title: string;
 }
 
 const App: React.FC<AppProps> = (_props: AppProps) => {
-  const [header, setHeader] = React.useState(0);
+  const [header, setHeader] = React.useState(1);
   const [prompt, setPromt] = React.useState("");
   const [instruction, setInstruction] = React.useState("");
   const [resultCol, setResultCol] = React.useState("");
@@ -13,18 +14,16 @@ const App: React.FC<AppProps> = (_props: AppProps) => {
   const [isAll, setIsAll] = React.useState(false);
   const [rowNum, setRowNum] = React.useState(3);
   const [startRow, setStartRow] = React.useState(1);
-  const [endRow, setEndRow] = React.useState(4);
+  const [endRow, setEndRow] = React.useState(3);
   const [range, setRange] = React.useState([0, Infinity]);
 
   React.useEffect(() => {
     if (rangeType === "auto") {
-      setRange([0, isAll ? Infinity : rowNum]);
+      setRange([header + 1, isAll ? Infinity : header + rowNum]);
     } else {
-      setRange([startRow, endRow]);
+      setRange([startRow + 1, endRow + 1]);
     }
-  }, [rangeType, isAll, rowNum, startRow, endRow]);
-
-  console.log({ header, prompt, resultCol, instruction, range });
+  }, [rangeType, header, isAll, rowNum, startRow, endRow]);
 
   return (
     <div className="text-sm/4 text-emerald-950 font-[Montserrat,sans-serif]">
@@ -35,8 +34,8 @@ const App: React.FC<AppProps> = (_props: AppProps) => {
           name="header"
           value={header}
           min={1}
-          onChange={(e) => setHeader(Number(e.target.value || 0))}
-          className="w-12 h-5 px-1 border border-emerald-500 rounded outline-none"
+          onChange={(e) => setHeader(Number(e.target.value))}
+          className="w-12 h-5 px-1 border border-emerald-500 rounded focus:outline-2 focus:outline-emerald-500/50"
         />
       </div>
       <div className="px-4 py-3 bg-emerald-600/10 *:mb-2">
@@ -91,14 +90,14 @@ const App: React.FC<AppProps> = (_props: AppProps) => {
                     type="radio"
                     checked={!isAll}
                     onChange={() => setIsAll(false)}
-                    className="h-5 accent-emerald-500"
+                    className="h-5 accent-emerald-500 cursor-pointer"
                   />
                   <input
                     type="number"
                     min={1}
                     value={rowNum}
-                    onChange={(e) => setRowNum(Number(e.target.value || 0))}
-                    className="w-12 h-5 px-1 border border-emerald-500 rounded outline-none focus:outline-2 focus:outline-emerald-500/50"
+                    onChange={(e) => setRowNum(Number(e.target.value))}
+                    className="w-12 h-5 px-1 border border-emerald-500 rounded focus:outline-2 focus:outline-emerald-500/50"
                   />
                   <span>rows</span>
                 </div>
@@ -107,7 +106,7 @@ const App: React.FC<AppProps> = (_props: AppProps) => {
                     type="radio"
                     checked={isAll}
                     onChange={() => setIsAll(true)}
-                    className="h-5 accent-emerald-500"
+                    className="h-5 accent-emerald-500 cursor-pointer"
                   />
                   <span>All rows</span>
                 </div>
@@ -120,8 +119,8 @@ const App: React.FC<AppProps> = (_props: AppProps) => {
                     type="number"
                     min={1}
                     value={startRow}
-                    onChange={(e) => setStartRow(Number(e.target.value || 0))}
-                    className="w-12 h-5 px-1 border border-emerald-500 rounded outline-none focus:outline-2 focus:outline-emerald-500/50"
+                    onChange={(e) => setStartRow(Number(e.target.value))}
+                    className="w-12 h-5 px-1 border border-emerald-500 rounded focus:outline-2 focus:outline-emerald-500/50"
                   />
                 </div>
                 <div className="flex items-center gap-2">
@@ -130,15 +129,18 @@ const App: React.FC<AppProps> = (_props: AppProps) => {
                     type="number"
                     min={1}
                     value={endRow}
-                    onChange={(e) => setEndRow(Number(e.target.value || 0))}
-                    className="w-12 h-5 px-1 border border-emerald-500 rounded outline-none focus:outline-2 focus:outline-emerald-500/50"
+                    onChange={(e) => setEndRow(Number(e.target.value))}
+                    className="w-12 h-5 px-1 border border-emerald-500 rounded focus:outline-2 focus:outline-emerald-500/50"
                   />
                 </div>
               </>
             )}
           </div>
-          <button className="w-1/2 h-8 bg-emerald-500 hover:bg-emerald-700 transition rounded-lg my-1 text-white cursor-pointer">
-            Run 3 rows
+          <button
+            onClick={() => handleSubmit({ prompt, instruction, range })}
+            className="w-1/2 h-8 bg-emerald-500 hover:bg-emerald-700 transition rounded-lg my-1 text-white cursor-pointer"
+          >
+            Run {range[1] === Infinity ? "all" : Math.max(0, range[1] - range[0] + 1)} rows
           </button>
         </div>
       </div>
