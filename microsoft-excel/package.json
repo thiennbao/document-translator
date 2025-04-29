@@ -21,6 +21,7 @@
     "signin": "office-addin-dev-settings m365-account login",
     "signout": "office-addin-dev-settings m365-account logout",
     "start": "office-addin-debugging start manifest.xml",
+    "tailwind": "npx @tailwindcss/cli -i ./src/taskpane/input.css -o ./src/taskpane/output.css --watch",
     "stop": "office-addin-debugging stop manifest.xml",
     "validate": "office-addin-manifest validate manifest.xml",
     "watch": "webpack --mode development --watch"
@@ -28,11 +29,14 @@
   "dependencies": {
     "@fluentui/react-components": "^9.55.1",
     "@fluentui/react-icons": "^2.0.264",
+    "@tailwindcss/cli": "^4.1.4",
     "core-js": "^3.36.0",
     "es6-promise": "^4.2.8",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "regenerator-runtime": "^0.14.1"
+    "regenerator-runtime": "^0.14.1",
+    "style-loader": "^4.0.0",
+    "tailwindcss": "^4.1.4"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",
