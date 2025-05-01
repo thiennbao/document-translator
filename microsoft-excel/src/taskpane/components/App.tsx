@@ -1,12 +1,13 @@
 import * as React from "react";
-import { handleSubmit } from "../utils";
+import { getColumnNames, handleSubmit } from "../utils";
 
 interface AppProps {
   title: string;
 }
 
 const App: React.FC<AppProps> = (_props: AppProps) => {
-  const [header, setHeader] = React.useState(1);
+  const [headers, setHeaders] = React.useState<string[]>([]);
+  const [headerNum, setHeaderNum] = React.useState(1);
   const [prompt, setPromt] = React.useState("");
   const [instruction, setInstruction] = React.useState("");
   const [resultCol, setResultCol] = React.useState("");
@@ -18,12 +19,16 @@ const App: React.FC<AppProps> = (_props: AppProps) => {
   const [range, setRange] = React.useState([0, Infinity]);
 
   React.useEffect(() => {
+    getColumnNames().then((headers) => setHeaders(headers));
+  }, []);
+
+  React.useEffect(() => {
     if (rangeType === "auto") {
-      setRange([header + 1, isAll ? Infinity : header + rowNum]);
+      setRange([headerNum + 1, isAll ? Infinity : headerNum + rowNum]);
     } else {
       setRange([startRow + 1, endRow + 1]);
     }
-  }, [rangeType, header, isAll, rowNum, startRow, endRow]);
+  }, [rangeType, headerNum, isAll, rowNum, startRow, endRow]);
 
   return (
     <div className="text-sm/4 text-emerald-950 font-[Montserrat,sans-serif]">
@@ -31,10 +36,10 @@ const App: React.FC<AppProps> = (_props: AppProps) => {
         <p className="font-bold">Header rows:</p>
         <input
           type="number"
-          name="header"
-          value={header}
+          name="headerNum"
+          value={headerNum}
           min={1}
-          onChange={(e) => setHeader(Number(e.target.value))}
+          onChange={(e) => setHeaderNum(Number(e.target.value))}
           className="w-12 h-5 px-1 border border-emerald-500 rounded focus:outline-2 focus:outline-emerald-500/50"
         />
       </div>
@@ -48,12 +53,15 @@ const App: React.FC<AppProps> = (_props: AppProps) => {
         />
         <p className="font-bold">Put the result in column:</p>
         <select
+          value={resultCol}
           onChange={(e) => setResultCol(e.target.value)}
           className="w-full p-1 bg-white border border-emerald-500 rounded focus:outline-2 focus:outline-emerald-500/50"
         >
-          <option>A: Dark</option>
-          <option>B: Bruh</option>
-          <option>C: Lmao</option>
+          {headers.map((header, index) => (
+            <option key={index} value={String.fromCharCode(index + 65)}>
+              {String.fromCharCode(index + 65)}: {header}
+            </option>
+          ))}
         </select>
         <p className="font-bold">Custom instructions</p>
         <textarea
@@ -137,7 +145,7 @@ const App: React.FC<AppProps> = (_props: AppProps) => {
             )}
           </div>
           <button
-            onClick={() => handleSubmit({ prompt, instruction, range })}
+            onClick={() => handleSubmit({ prompt, instruction, range, resultCol })}
             className="w-1/2 h-8 bg-emerald-500 hover:bg-emerald-700 transition rounded-lg my-1 text-white cursor-pointer"
           >
             Run {range[1] === Infinity ? "all" : Math.max(0, range[1] - range[0] + 1)} rows
