@@ -1,5 +1,7 @@
 import * as React from "react";
-import { getColumnNames, handleSubmit } from "../utils";
+import { getColumnNames, putResult } from "../utils/sheet";
+import { parsePrompt } from "../utils/promt";
+import { promptGemini } from "../utils/gemini";
 
 interface AppProps {
   title: string;
@@ -29,6 +31,25 @@ const App: React.FC<AppProps> = (_props: AppProps) => {
       setRange([startRow + 1, endRow + 1]);
     }
   }, [rangeType, headerNum, isAll, rowNum, startRow, endRow]);
+
+  const handleSubmit = async ({
+    prompt,
+    instruction,
+    range,
+    resultCol,
+  }: {
+    prompt: string;
+    instruction: string;
+    range: number[];
+    resultCol?: string;
+  }) => {
+    const prompts = await parsePrompt({ prompt, instruction, range });
+    console.log(prompts);
+    const results = await Promise.all(
+      prompts.map(async (prompt) => await promptGemini(prompt, "gemini-2.0-flash"))
+    );
+    await putResult(results, range, resultCol);
+  };
 
   return (
     <div className="text-sm/4 text-emerald-950 font-[Montserrat,sans-serif]">

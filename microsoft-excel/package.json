@@ -29,6 +29,7 @@
   "dependencies": {
     "@fluentui/react-components": "^9.55.1",
     "@fluentui/react-icons": "^2.0.264",
+    "@google/generative-ai": "^0.24.1",
     "@tailwindcss/cli": "^4.1.4",
     "core-js": "^3.36.0",
     "es6-promise": "^4.2.8",
