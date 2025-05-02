@@ -5,12 +5,9 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const CustomFunctionsMetadataPlugin = require("custom-functions-metadata-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const webpack = require("webpack");
-const path = require("path");
 
 const urlDev = "https://localhost:3000/";
 const urlProd = "https://www.contoso.com/"; // CHANGE THIS TO YOUR PRODUCTION DEPLOYMENT LOCATION
-
-/* global require, module, process, __dirname */
 
 async function getHttpsOptions() {
   const httpsOptions = await devCerts.getHttpsServerOptions();
@@ -43,7 +40,7 @@ module.exports = async (env, options) => {
           test: /\.ts$/,
           exclude: /node_modules/,
           use: {
-            loader: "babel-loader",
+            loader: "babel-loader"
           },
         },
         {
@@ -57,7 +54,7 @@ module.exports = async (env, options) => {
           use: "html-loader",
         },
         {
-          test: /\.(png|jpg|jpeg|ttf|woff|woff2|gif|ico)$/,
+          test: /\.(png|jpg|jpeg|gif|ico)$/,
           type: "asset/resource",
           generator: {
             filename: "assets/[name][ext][query]",
@@ -71,14 +68,9 @@ module.exports = async (env, options) => {
         input: "./src/functions/functions.ts",
       }),
       new HtmlWebpackPlugin({
-        filename: "functions.html",
-        template: "./src/functions/functions.html",
-        chunks: ["polyfill", "functions"],
-      }),
-      new HtmlWebpackPlugin({
         filename: "taskpane.html",
         template: "./src/taskpane/taskpane.html",
-        chunks: ["polyfill", "taskpane", "react"],
+        chunks: ["polyfill", "taskpane", "functions", "commands", "react"],
       }),
       new CopyWebpackPlugin({
         patterns: [
@@ -93,26 +85,18 @@ module.exports = async (env, options) => {
               if (dev) {
                 return content;
               } else {
-                return content.toString().replace(new RegExp(urlDev + "(?:public/)?", "g"), urlProd);
+                return content.toString().replace(urlDev, urlProd);
               }
             },
           },
         ],
-      }),
-      new HtmlWebpackPlugin({
-        filename: "commands.html",
-        template: "./src/commands/commands.html",
-        chunks: ["polyfill", "commands"],
       }),
       new webpack.ProvidePlugin({
         Promise: ["es6-promise", "Promise"],
       }),
     ],
     devServer: {
-      static: {
-        directory: path.join(__dirname, "dist"),
-        publicPath: "/public",
-      },
+      hot: true,
       headers: {
         "Access-Control-Allow-Origin": "*",
       },
