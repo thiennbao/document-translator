@@ -3,8 +3,8 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI("AIzaSyDzkhf7XJvXaCxFYE6crrbIxAr4Ntizwv4");
 
-export const promptGemini = async (prompt: string, model: string) => {
-  const genModel = genAI.getGenerativeModel({ model });
+export const promptGemini = async (prompt: string, model: string, temperature: number) => {
+  const genModel = genAI.getGenerativeModel({ model, generationConfig: { temperature } });
   const result = await genModel.generateContent(prompt);
   return result.response.text();
 };
@@ -12,13 +12,18 @@ export const promptGemini = async (prompt: string, model: string) => {
 /**
  * Summarize.
  * @customfunction SUMMARIZE
- * @param cell The cell text
+ * @param text The cell text
+ * @param format The format that user would like to output (a prompt)
+ * @param temperature: The temperature to be set
+ * @param model:The model that user would like to use
  * @returns The summarization text
  */
-export function summarize(cell: string) {
+export function summarize(text: string, format?: string, temperature?: number, model?: string) {
   try {
-    const prompt = `Summarize the following text: "${cell}".`;
-    return promptGemini(prompt, "gemini-2.0-flash");
+    const prompt =
+      `Summarize the following text: "${text}".` +
+      (format && `Return the output with the following format: "${format}"`);
+    return promptGemini(prompt, model || "gemini-2.0-flash", temperature || 1);
   } catch (e) {
     return `Error: ${e.message}`;
   }
