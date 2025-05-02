@@ -8,6 +8,7 @@ interface AppProps {
 }
 
 const App: React.FC<AppProps> = (_props: AppProps) => {
+  const [model, setModel] = React.useState("gemini-2.0-flash");
   const [headers, setHeaders] = React.useState<string[]>([]);
   const [headerNum, setHeaderNum] = React.useState(1);
   const [prompt, setPromt] = React.useState("");
@@ -20,8 +21,11 @@ const App: React.FC<AppProps> = (_props: AppProps) => {
   const [endRow, setEndRow] = React.useState(3);
   const [range, setRange] = React.useState([0, Infinity]);
 
-  React.useEffect(() => {
+  const handleHeader = () => {
     getColumnNames().then((headers) => setHeaders(headers));
+  };
+  React.useEffect(() => {
+    handleHeader();
   }, []);
 
   React.useEffect(() => {
@@ -46,13 +50,30 @@ const App: React.FC<AppProps> = (_props: AppProps) => {
     const prompts = await parsePrompt({ prompt, instruction, range });
     console.log(prompts);
     const results = await Promise.all(
-      prompts.map(async (prompt) => await promptGemini(prompt, "gemini-2.0-flash"))
+      prompts.map(async (prompt) => await promptGemini(prompt, model))
     );
     await putResult(results, range, resultCol);
   };
 
   return (
-    <div className="text-sm/4 text-emerald-950 font-[Montserrat,sans-serif]">
+    <div className="text-sm/3 text-emerald-950 font-[Montserrat,sans-serif]">
+      <div className="px-4 py-3 flex items-center gap-2 bg-emerald-950 *:bg-emerald-950 *:text-white">
+        <p className="font-bold text-xs">Prompt:</p>
+        <select
+          value={model}
+          onChange={(e) => setModel(e.target.value)}
+          className="w-full p-1 bg-white border border-emerald-500 rounded focus:outline-2 focus:outline-emerald-500/50 text-xs"
+        >
+          <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+          <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash Experimental</option>
+          <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash-Lite</option>
+          <option value="gemini-2.0-flash-thinking-exp-01-21">
+            Gemini 2.0 Flash Thinking Experimental 01-21
+          </option>
+          <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+          <option value="gemini-1.5-flash-8b">Gemini 1.5 Flash-8B</option>
+        </select>
+      </div>
       <div className="px-4 py-3 flex items-center gap-2">
         <p className="font-bold">Header rows:</p>
         <input
@@ -76,6 +97,7 @@ const App: React.FC<AppProps> = (_props: AppProps) => {
         <select
           value={resultCol}
           onChange={(e) => setResultCol(e.target.value)}
+          onClick={handleHeader}
           className="w-full p-1 bg-white border border-emerald-500 rounded focus:outline-2 focus:outline-emerald-500/50"
         >
           {headers.map((header, index) => (
