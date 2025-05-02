@@ -1,7 +1,7 @@
 ﻿/* global clearInterval, console, CustomFunctions, setInterval */
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const genAI = new GoogleGenerativeAI("AIzaSyDzkhf7XJvXaCxFYE6crrbIxAr4Ntizwv4");
+const genAI = new GoogleGenerativeAI("AIzaSyDzkhfyourAPIkey4Ntizwv4");
 
 export const promptGemini = async (prompt: string, model: string, temperature: number) => {
   const genModel = genAI.getGenerativeModel({ model, generationConfig: { temperature } });
